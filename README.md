@@ -7,7 +7,15 @@
 | 侧键 3 | Control + → | 右侧桌面 |
 | 侧键 4 | Control + ← | 左侧桌面 |
 
-已在 Logitech G309 上验证，其他鼠标的侧键编号可能不同。系统要求：macOS 13 或更新版本。
+## 兼容性验证
+
+| 项目 | 型号 / 版本 |
+| --- | --- |
+| 鼠标 | Logitech G309、Logitech G304、Razer Basilisk X HyperSpeed |
+| 电脑 | MacBook Pro（Mac16,1，Apple M4） |
+| 系统 | macOS 27.0.1（Build 26A434） |
+
+其他鼠标的侧键编号可能不同。系统要求：macOS 13 或更新版本。
 
 ## 安装
 
