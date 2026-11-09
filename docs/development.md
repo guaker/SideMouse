@@ -14,8 +14,8 @@ Resources/           Info.plist、图标、多语言应用名
 Tests/               不发送系统事件的回归检查
 scripts/check.sh     代码、资源和回归检查入口
 docs/images/         使用说明截图
-SideMouse.app/       当前签名应用包
 build.sh             构建入口
+scripts/release.sh   公证、打包和校验和
 ```
 
 ## 检查和构建
@@ -29,7 +29,7 @@ build.sh             构建入口
 
 检查脚本验证 Swift 类型、编译警告、Shell 语法和 plist，并检查侧键方向、事件标志、权限与修饰键保护、快速连按、取消与重新发送。测试通过内存回调记录事件，不创建系统事件监听器、不请求隐私权限、不切换桌面。
 
-构建先在临时目录编译、签名和验证，成功后替换项目中的 `SideMouse.app`，清理临时文件。失败时保留原应用包。不会覆盖 `/Applications` 中的安装版本。默认生成当前机器架构的优化构建，最低系统版本为 macOS 13。
+构建先在临时目录编译、签名和验证，成功后生成项目根目录中的 `SideMouse.app`，清理临时文件。失败时保留原应用包。不会覆盖 `/Applications` 中的安装版本。默认生成当前机器架构的优化构建，最低系统版本为 macOS 13。应用包不纳入源码仓库。
 
 默认使用原 Developer ID 证书。无该证书时可使用临时签名：
 
@@ -37,7 +37,19 @@ build.sh             构建入口
 SIDEMOUSE_SIGNING_IDENTITY=- SIDEMOUSE_OUTPUT_DIR=dist ./build.sh
 ```
 
-`SIDEMOUSE_OUTPUT_DIR` 指定输出目录，默认项目根目录。更换签名身份可能需要重新授权；签名验证通过不代表已完成 Apple 公证。
+`SIDEMOUSE_OUTPUT_DIR` 指定输出目录，默认项目根目录。Developer ID 构建启用 Hardened Runtime 并附加可信时间戳；更换签名身份可能需要重新授权。签名验证通过不代表已完成 Apple 公证。
+
+## 发布
+
+先在钥匙串中保存 Apple 公证凭据。可使用 Apple ID 专用密码和 Team ID，或 App Store Connect API Key；只使用本机 `notarytool` 钥匙串配置，不要将密码或私钥提交到仓库。
+
+```sh
+xcrun notarytool store-credentials SideMouseNotary \
+  --apple-id '<Apple ID 邮箱>' \
+  --team-id '7W443PQ7JZ'
+```
+
+完成交互式凭据录入后运行 `./scripts/release.sh`。脚本将构建 Developer ID 应用、公证、装订票据、验证 Gatekeeper、生成 ZIP 和 SHA-256 文件。将 `dist/` 中两个发布文件上传至 GitHub Release `v2.0`。Apple 公证凭据通过 `SIDEMOUSE_NOTARY_PROFILE` 选择，默认名称为 `SideMouseNotary`。
 
 ## 运行约束
 

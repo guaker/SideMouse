@@ -19,7 +19,7 @@
 
 ## 安装
 
-1. 下载仓库（Code → Download ZIP），解压后将 `SideMouse.app` 拖入“应用程序”。
+1. 从 [Releases](https://github.com/guaker/SideMouse/releases/latest) 下载最新版 macOS 安装包，解压后将 `SideMouse.app` 拖入“应用程序”。
 2. 打开应用，在“系统设置 → 隐私与安全性”中开启下表两项权限。
 3. 退出并重新打开应用，确认权限为“已允许”、侧键监听为“运行中”。
 

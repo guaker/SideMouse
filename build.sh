@@ -30,7 +30,11 @@ swiftc \
   -framework CoreGraphics
 
 cp "$ROOT/THIRD_PARTY_NOTICES.md" "$STAGED_APP/Contents/Resources/THIRD_PARTY_NOTICES.md"
-codesign --force --sign "$SIGNING_IDENTITY" "$STAGED_APP"
+if [[ "$SIGNING_IDENTITY" == "-" ]]; then
+  codesign --force --sign - "$STAGED_APP"
+else
+  codesign --force --options runtime --timestamp --sign "$SIGNING_IDENTITY" "$STAGED_APP"
+fi
 codesign --verify --deep --strict "$STAGED_APP"
 
 rm -rf "$APP"
