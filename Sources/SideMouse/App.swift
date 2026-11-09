@@ -31,6 +31,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         controller.onStatusChange = { [weak self] in self?.refreshWindow() }
+        statusWindow.onRetry = { [weak self] in self?.tryStart() }
         tryStart()
         if !CommandLine.arguments.contains("--background") {
             statusWindow.show()
@@ -38,9 +39,13 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        refreshWindow()
+        tryStart()
         statusWindow.show()
         return true
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        tryStart()
     }
 
     func applicationWillTerminate(_ notification: Notification) {

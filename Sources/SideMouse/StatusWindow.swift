@@ -2,7 +2,7 @@ import Cocoa
 
 final class StatusWindow: NSObject {
     private let window = NSWindow(
-        contentRect: NSRect(x: 0, y: 0, width: 520, height: 380),
+        contentRect: NSRect(x: 0, y: 0, width: 520, height: 400),
         styleMask: [.titled, .closable],
         backing: .buffered,
         defer: false
@@ -14,6 +14,7 @@ final class StatusWindow: NSObject {
     private let eventLabel = NSTextField(labelWithString: "")
     private let actionLabel = NSTextField(labelWithString: "")
     private let errorLabel = NSTextField(labelWithString: "")
+    var onRetry: (() -> Void)?
 
     override init() {
         super.init()
@@ -26,7 +27,7 @@ final class StatusWindow: NSObject {
     }
 
     private func makeWindow() {
-        let size = NSSize(width: 520, height: 380)
+        let size = NSSize(width: 520, height: 400)
         window.title = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "SideMouse"
         window.isReleasedWhenClosed = false
         window.center()
@@ -48,18 +49,48 @@ final class StatusWindow: NSObject {
         makeRow(eventLabel, in: content, y: 128, title: "最近侧键")
         makeRow(actionLabel, in: content, y: 96, title: "最近动作")
         makeRow(errorLabel, in: content, y: 64, title: "状态")
+        errorLabel.maximumNumberOfLines = 2
+        errorLabel.frame.size.height = 34
+        errorLabel.lineBreakMode = .byWordWrapping
+        let inputSettings = NSButton(title: "输入监控设置", target: self, action: #selector(openInputMonitoringSettings))
+        inputSettings.bezelStyle = .rounded
+        inputSettings.frame = NSRect(x: 28, y: 16, width: 110, height: 30)
+        content.addSubview(inputSettings)
+        let accessibilitySettings = NSButton(title: "辅助功能设置", target: self, action: #selector(openAccessibilitySettings))
+        accessibilitySettings.bezelStyle = .rounded
+        accessibilitySettings.frame = NSRect(x: 146, y: 16, width: 110, height: 30)
+        content.addSubview(accessibilitySettings)
+        let retry = NSButton(title: "重新检测", target: self, action: #selector(retryPermissions))
+        retry.bezelStyle = .rounded
+        retry.frame = NSRect(x: 264, y: 16, width: 100, height: 30)
+        content.addSubview(retry)
         let quit = NSButton(title: "退出", target: self, action: #selector(quitApp))
         quit.bezelStyle = .rounded
         quit.frame = NSRect(x: 404, y: 16, width: 88, height: 30)
         content.addSubview(quit)
-        let note = NSTextField(labelWithString: "关闭窗口后继续运行；点击退出可停止映射。")
+        let note = NSTextField(labelWithString: "授权后返回此窗口会自动检测；关闭窗口后映射继续运行。")
         note.font = .systemFont(ofSize: 11)
         note.textColor = .secondaryLabelColor
-        note.frame = NSRect(x: 28, y: 22, width: 360, height: 18)
+        note.frame = NSRect(x: 28, y: 48, width: 464, height: 16)
         content.addSubview(note)
     }
 
     @objc private func quitApp() { NSApp.terminate(nil) }
+
+    @objc private func openInputMonitoringSettings() {
+        openSettingsPane("Privacy_ListenEvent")
+    }
+
+    @objc private func openAccessibilitySettings() {
+        openSettingsPane("Privacy_Accessibility")
+    }
+
+    private func openSettingsPane(_ pane: String) {
+        guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?\(pane)") else { return }
+        NSWorkspace.shared.open(url)
+    }
+
+    @objc private func retryPermissions() { onRetry?() }
 
     private func makeRow(_ value: NSTextField, in view: NSView, y: CGFloat, title: String) {
         let key = NSTextField(labelWithString: title)

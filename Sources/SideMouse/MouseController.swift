@@ -19,7 +19,7 @@ final class MouseController {
     func start() -> Bool {
         guard eventTap == nil else { return isListening }
         guard CGPreflightListenEventAccess() else {
-            lastError = "等待“输入监控”权限"
+            lastError = "请在系统设置开启“输入监控”，然后返回此窗口重新检测。"
             if !didRequestListenAccess {
                 didRequestListenAccess = true
                 _ = CGRequestListenEventAccess()
@@ -27,7 +27,7 @@ final class MouseController {
             return false
         }
         guard CGPreflightPostEventAccess() else {
-            lastError = "等待“设备控制和数据访问 / 辅助功能”权限"
+            lastError = "请在系统设置开启“设备控制和数据访问 / 辅助功能”，然后返回此窗口重新检测。"
             if !didRequestPostAccess {
                 didRequestPostAccess = true
                 _ = CGRequestPostEventAccess()
@@ -50,7 +50,7 @@ final class MouseController {
             callback: callback,
             userInfo: Unmanaged.passUnretained(self).toOpaque()
         ) else {
-            lastError = "无法创建鼠标事件监听，请检查输入监控权限"
+            lastError = "权限状态已读取，但 macOS 暂未允许创建监听。请重新检测；仍失败时退出并重新打开应用。"
             return false
         }
         guard let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0) else {
