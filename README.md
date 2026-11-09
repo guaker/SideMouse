@@ -29,3 +29,7 @@
 - 无法切换：检查两项权限，并确认实体键盘的 Control + 左/右箭头能切换桌面。
 
 [图文使用说明](使用说明.md) · [第三方许可](THIRD_PARTY_NOTICES.md)
+
+## 开发
+
+运行 `./scripts/check.sh` 检查代码和快捷键回归，运行 `./build.sh` 生成签名应用。目录结构、签名配置见[开发说明](docs/development.md)。
