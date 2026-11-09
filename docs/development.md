@@ -49,7 +49,7 @@ xcrun notarytool store-credentials SideMouseNotary \
   --team-id '7W443PQ7JZ'
 ```
 
-完成交互式凭据录入后运行 `./scripts/release.sh`。脚本将构建 Developer ID 应用、公证、装订票据、验证 Gatekeeper、生成 ZIP 和 SHA-256 文件。将 `dist/` 中两个发布文件上传至 GitHub Release `v2.0`。Apple 公证凭据通过 `SIDEMOUSE_NOTARY_PROFILE` 选择，默认名称为 `SideMouseNotary`。
+完成交互式凭据录入后运行 `./scripts/release.sh`。脚本将构建 Developer ID 应用、公证、装订票据、验证 Gatekeeper、生成 ZIP 和 SHA-256 文件。将 `dist/` 中两个发布文件上传至对应的 GitHub Release。Apple 公证凭据通过 `SIDEMOUSE_NOTARY_PROFILE` 选择，默认名称为 `SideMouseNotary`。
 
 ## 运行约束
 
