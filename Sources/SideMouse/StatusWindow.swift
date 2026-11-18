@@ -1,4 +1,5 @@
 import Cocoa
+import ServiceManagement
 
 final class StatusWindow: NSObject {
     private let window = NSWindow(
@@ -14,6 +15,7 @@ final class StatusWindow: NSObject {
     private let eventLabel = NSTextField(labelWithString: "")
     private let actionLabel = NSTextField(labelWithString: "")
     private let errorLabel = NSTextField(labelWithString: "")
+    private let loginItemLabel = NSTextField(labelWithString: "")
     var onRetry: (() -> Void)?
 
     override init() {
@@ -37,8 +39,15 @@ final class StatusWindow: NSObject {
 
         let title = NSTextField(labelWithString: Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "SideMouse")
         title.font = .boldSystemFont(ofSize: 24)
-        title.frame = NSRect(x: 28, y: 320, width: 450, height: 32)
+        title.frame = NSRect(x: 28, y: 344, width: 450, height: 32)
         content.addSubview(title)
+
+        makeRow(loginItemLabel, in: content, y: 308, title: "登录时启动")
+        loginItemLabel.frame.size.width = 210
+        let loginSettings = NSButton(title: "登录项设置", target: self, action: #selector(openLoginItemSettings))
+        loginSettings.bezelStyle = .rounded
+        loginSettings.frame = NSRect(x: 384, y: 304, width: 108, height: 30)
+        content.addSubview(loginSettings)
 
         makeRow(permissionLabel, in: content, y: 276, title: "快捷键发送权限")
         makeRow(inputLabel, in: content, y: 244, title: "输入监控权限")
@@ -76,6 +85,12 @@ final class StatusWindow: NSObject {
     }
 
     @objc private func quitApp() { NSApp.terminate(nil) }
+
+    @objc private func openLoginItemSettings() { SMAppService.openSystemSettingsLoginItems() }
+
+    func showLoginItemStatus(_ status: String) {
+        loginItemLabel.stringValue = status
+    }
 
     @objc private func openInputMonitoringSettings() {
         openSettingsPane("Privacy_ListenEvent")

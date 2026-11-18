@@ -26,10 +26,13 @@ enum SideMouseApp {
 
 private final class AppDelegate: NSObject, NSApplicationDelegate {
     private let controller = MouseController()
+    private let loginItem = LoginItem()
     private let statusWindow = StatusWindow()
     private var retryTimer: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        loginItem.setUpIfNeeded()
+        refreshLoginItem()
         controller.onStatusChange = { [weak self] in self?.refreshWindow() }
         statusWindow.onRetry = { [weak self] in self?.tryStart() }
         tryStart()
@@ -39,12 +42,14 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        refreshLoginItem()
         tryStart()
         statusWindow.show()
         return true
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {
+        refreshLoginItem()
         tryStart()
     }
 
@@ -66,5 +71,9 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func refreshWindow() {
         statusWindow.refresh(controller: controller)
+    }
+
+    private func refreshLoginItem() {
+        statusWindow.showLoginItemStatus(loginItem.statusText)
     }
 }
